@@ -1,105 +1,161 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คนสำคัญของผม</title>
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>โลกเล็กๆ ของเรา 🌸</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;1,300&family=Mitr:wght@300;400;500&family=Charm:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #faf7f2; --blush: #f2ddd8; --rose: #d4a8a0;
+      --dusty: #b88a82; --text: #3d2e2b; --muted: #9a7e7a;
+      --white: #ffffff; --card: rgba(255,255,255,0.85);
     }
-    body {
-      font-family: 'Anuphan', sans-serif;
-      background-color: #ffeef2;
-      color: #555;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-    /* หัวใจและดอกไม้ตกแต่งฉากหลัง */
-    .decor {
-      position: absolute;
-      font-size: 24px;
-      opacity: 0.6;
-      animation: float 6s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(20deg); }
-    }
-    main {
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-      z-index: 10;
-    }
-    p.title {
-      font-size: 1.2rem;
-      color: #ff7b93;
-      font-weight: 600;
-      margin-bottom: 15px;
-    }
-    h1 em {
-      font-style: normal;
-      color: #ff4766;
-    }
-    .subtitle {
-      margin-top: 5px;
-      font-size: 1rem;
-      color: #888;
-    }
-    .img-container {
-      margin: 20px auto;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 5px solid #ffeef2;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    .img-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); color: var(--text); font-family: "Sarabun", sans-serif; font-weight: 300; min-height: 100vh; overflow-x: hidden; }
+
+    /* LOADER */
+    #loader { position: fixed; inset: 0; background: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 200; transition: opacity .7s ease, visibility .7s ease; }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-heart { width: 44px; height: 44px; background: var(--rose); transform: rotate(45deg); animation: heartbeat .85s ease-in-out infinite; position: relative; border-radius: 4px; }
+    .loader-heart::before, .loader-heart::after { content: ""; position: absolute; width: 44px; height: 44px; background: var(--rose); border-radius: 50%; }
+    .loader-heart::before { top: -22px; left: 0; }
+    .loader-heart::after { left: -22px; top: 0; }
+    .loader-text { font-family: "Charm", cursive; font-size: 15px; color: var(--dusty); letter-spacing: .1em; margin-top: 12px; }
+    @keyframes heartbeat { 0%,100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.18); } }
+
+    /* MAIN */
+    main { opacity: 0; transform: translateY(16px); transition: opacity .9s ease .2s, transform .9s ease .2s; }
+    main.visible { opacity: 1; transform: translateY(0); }
+
+    /* TOP RIGHT BUTTONS */
+    .top-btns { position: fixed; top: 16px; right: 16px; z-index: 100; display: flex; align-items: center; gap: 8px; }
+    .gear-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--card); box-shadow: 0 2px 14px rgba(180,130,120,.2); color: var(--dusty); backdrop-filter: blur(8px); transition: transform .25s ease; }
+    .gear-btn:hover { transform: rotate(45deg); }
+    .exit-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; box-shadow: 0 2px 14px rgba(180,130,120,.3); transition: transform .2s ease; }
+    .exit-btn:hover { transform: scale(1.1); }
+    .exit-btn { display: none; }
+    .exit-btn.show { display: flex; }
+
+    /* PASSWORD MODAL */
+    .modal-bg { position: fixed; inset: 0; background: rgba(61,46,43,.5); backdrop-filter: blur(6px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; }
+    .modal-bg.show { opacity: 1; visibility: visible; }
+    .modal-box { background: var(--cream); border-radius: 24px; padding: 32px 28px; max-width: 300px; width: 88%; text-align: center; box-shadow: 0 16px 48px rgba(180,130,120,.3); transform: scale(.92); transition: transform .3s ease; }
+    .modal-bg.show .modal-box { transform: scale(1); }
+    .modal-box h2 { font-family: "Charm",cursive; font-size: 1.6rem; color: var(--text); margin-bottom: 6px; }
+    .modal-box p { font-family: "Sarabun",sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+    .modal-input { width: 100%; padding: 13px 16px; border: 1.5px solid rgba(212,168,160,.5); border-radius: 100px; font-family: "Sarabun",sans-serif; font-size: 16px; text-align: center; background: var(--white); color: var(--text); outline: none; letter-spacing: .25em; transition: border-color .2s; }
+    .modal-input:focus { border-color: var(--rose); }
+    .modal-input.shake { animation: shake .35s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .modal-err { font-family: "Sarabun",sans-serif; font-size: 12px; color: #c0605a; margin-top: 8px; min-height: 18px; }
+    .modal-btn { margin-top: 16px; width: 100%; padding: 14px; border-radius: 100px; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; font-family: "Mitr",sans-serif; font-size: 15px; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(180,130,120,.3); transition: filter .2s; }
+    .modal-btn:hover { filter: brightness(1.08); }
+    .modal-cancel { margin-top: 12px; background: none; border: none; font-family: "Sarabun",sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; padding: 4px 8px; }
+
+    /* EDIT MODE BANNER */
+    .edit-banner { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; border-radius: 100px; padding: 12px 24px; font-family: "Mitr",sans-serif; font-size: 13px; letter-spacing: .05em; box-shadow: 0 6px 24px rgba(180,130,120,.35); z-index: 100; white-space: nowrap; display: none; }
+    .edit-banner.show { display: block; }
+
+    /* EDIT OVERLAY on photo */
+    .edit-overlay { position: absolute; inset: 0; background: rgba(61,46,43,.42); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; opacity: 0; pointer-events: none; transition: opacity .25s ease; border-radius: 24px 24px 0 0; }
+    .edit-overlay.active { opacity: 1; pointer-events: all; cursor: pointer; }
+    .edit-overlay span { font-family: "Mitr",sans-serif; font-size: 14px; color: #fff; letter-spacing: .08em; }
+
+    .eyebrow { text-align: center; padding: 32px 0 0; font-family: "Mitr",sans-serif; font-size: 11px; letter-spacing: .22em; color: var(--muted); }
+    .hero { display: flex; flex-direction: column; align-items: center; padding: 20px 24px 48px; gap: 30px; }
+    .hero-text { text-align: center; }
+    .hero-text h1 { font-family: "Charm",cursive; font-weight: 700; font-size: clamp(2.2rem,10vw,3.4rem); line-height: 1.2; color: var(--text); }
+    .hero-text h1 em { font-style: normal; color: var(--dusty); }
+    .hero-text p { margin-top: 10px; font-size: 14px; color: var(--muted); font-weight: 300; }
+    .photo-card { width: 100%; max-width: 320px; position: relative; display: flex; flex-direction: column; align-items: center; }
+    .photo-frame { width: 100%; aspect-ratio: 3/4; border-radius: 24px 24px 0 0; overflow: hidden; box-shadow: 0 10px 36px rgba(180,130,120,.2); position: relative; }
+    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-card::before, .photo-card::after { content: ""; position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--rose); opacity: .55; z-index: 1; }
+    .photo-card::before { top: -5px; right: -5px; }
+    .photo-card::after { bottom: 62px; left: -5px; }
+    .ig-btn { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 16px 24px; border-radius: 0 0 24px 24px; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; font-family: "Mitr",sans-serif; font-size: 15px; font-weight: 400; letter-spacing: .06em; text-decoration: none; box-shadow: 0 8px 24px rgba(180,130,120,.28); transition: filter .2s ease; }
+    .ig-btn:hover { filter: brightness(1.07); }
+    .divider { width: 48px; height: 1px; background: var(--rose); margin: 0 auto; opacity: .45; }
+    .counter-section { padding: 0 20px 44px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .section-eyebrow { font-family: "Mitr",sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); text-align: center; }
+    .milestone-badge { background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; border-radius: 100px; padding: 10px 28px; font-family: "Charm",cursive; font-size: clamp(1.15rem,5vw,1.4rem); box-shadow: 0 4px 20px rgba(180,130,120,.3); text-align: center; }
+    .counter-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; width: 100%; max-width: 340px; }
+    .counter-unit { background: var(--card); border: 1px solid rgba(212,168,160,.28); border-radius: 16px; padding: 14px 6px 10px; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 2px 14px rgba(180,130,120,.08); }
+    .counter-num { font-family: "Charm",cursive; font-size: clamp(1.7rem,7vw,2.3rem); color: var(--text); line-height: 1; display: block; transition: transform .12s ease; }
+    .counter-num.tick { transform: scale(1.1); }
+    .counter-unit small { display: block; font-family: "Mitr",sans-serif; font-size: 9px; letter-spacing: .14em; color: var(--muted); margin-top: 5px; }
+    .counter-since { font-family: "Sarabun",sans-serif; font-size: 12.5px; color: var(--muted); text-align: center; }
+    .countdown-wrap { width: 100%; max-width: 340px; background: var(--card); border: 1.5px dashed rgba(212,168,160,.45); border-radius: 20px; padding: 18px 12px 14px; text-align: center; box-shadow: 0 2px 14px rgba(180,130,120,.06); }
+    .countdown-title { font-family: "Sarabun",sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.7; }
+    .countdown-title strong { font-family: "Mitr",sans-serif; color: var(--dusty); font-weight: 500; display: block; font-size: 13px; margin-top: 2px; }
+    .countdown-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .cd-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .cd-num { font-family: "Charm",cursive; font-size: clamp(1.5rem,6vw,1.9rem); color: var(--dusty); line-height: 1; transition: transform .12s ease; }
+    .cd-num.tick { transform: scale(1.1); }
+    .cd-unit small { font-family: "Mitr",sans-serif; font-size: 9px; letter-spacing: .12em; color: var(--muted); }
+    .quote-section { padding: 0 28px 48px; text-align: center; }
+    .quote-section blockquote { font-family: "Charm",cursive; font-size: clamp(1.1rem,5vw,1.4rem); color: var(--dusty); line-height: 1.9; max-width: 290px; margin: 0 auto; }
+    footer { text-align: center; padding: 0 24px 44px; font-family: "Sarabun",sans-serif; font-size: 12px; color: var(--muted); opacity: .65; }
+    footer span { color: var(--rose); }
+    .petal { position: fixed; pointer-events: none; font-size: 13px; opacity: 0; animation: fall linear infinite; z-index: 0; }
+    @keyframes fall { 0%{opacity:0;transform:translateY(-20px) rotate(0deg);} 10%{opacity:.45;} 90%{opacity:.25;} 100%{opacity:0;transform:translateY(100vh) rotate(360deg);} }
+    #fileInput { display: none; }
+    @media (prefers-reduced-motion:reduce) { .petal,.loader-heart,main{animation:none;transition:none;} main{opacity:1;transform:none;} }
   </style>
 </head>
 <body>
 
-  <!-- ตกแต่งรอบๆ -->
-  <div class="decor" style="top: 10%; left: 10%; animation-delay: 0s;">🌸</div>
-  <div class="decor" style="top: 20%; right: 15%; animation-delay: 1s;">🌷</div>
-  <div class="decor" style="bottom: 15%; left: 15%; animation-delay: 2s;">🌸</div>
-  <div class="decor" style="bottom: 20%; right: 10%; animation-delay: 3s;">✿</div>
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-heart"></div>
+    <p class="loader-text">กำลังโหลดความรัก...</p>
+  </div>
 
-  <main>
-    <p class="title">✦ คนสำคัญของผม ✦</p>
+  <!-- PASSWORD MODAL -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+      <h2>🔐 ใส่รหัส</h2>
+      <p>ใส่รหัสเพื่อเข้าสู่<br>โหมดแก้ไขรูปภาพ</p>
+      <input class="modal-input" id="pwInput" type="password" placeholder="••••••" maxlength="20" />
+      <p class="modal-err" id="pwErr"></p>
+      <button class="modal-btn" id="pwOkBtn">ยืนยัน</button>
+      <br/>
+      <button class="modal-cancel" id="modalCancelBtn">ยกเลิก</button>
+    </div>
+  </div>
 
-    <section>
-      <div>
+  <!-- EDIT BANNER -->
+  <div class="edit-banner" id="editBanner">✏️ โหมดแก้ไข — กดที่รูปเพื่อเปลี่ยน</div>
+
+  <!-- TOP RIGHT BUTTONS -->
+  <div class="top-btns">
+    <button class="exit-btn" id="exitBtn" title="ออกโหมดแก้ไข">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="gear-btn" id="gearBtn" title="แก้ไขรูป">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" />
+
+  <div class="petal" style="left:7%;animation-duration:10s;animation-delay:0s;">🌸</div>
+  <div class="petal" style="left:21%;animation-duration:13s;animation-delay:2.5s;">🌷</div>
+  <div class="petal" style="left:53%;animation-duration:11s;animation-delay:4s;">🌸</div>
+  <div class="petal" style="left:77%;animation-duration:15s;animation-delay:1s;">✿</div>
+  <div class="petal" style="left:90%;animation-duration:8.5s;animation-delay:6s;">🌸</div>
+
+  <main id="main">
+    <p class="eyebrow">✦ คนสำคัญของผม ✦</p>
+    <section class="hero">
+      <div class="hero-text">
         <h1><em>แฟนผม 🤍</em></h1>
-        <p class="subtitle">คนที่ผมรัก</p>
+        <p>คนที่ผมรัก</p>
       </div>
-
-      <div class="img-container">
-        <!-- เปลี่ยนเป็นชื่อไฟล์รูปภาพใหม่เรียบร้อยครับ -->
-        <img alt="คนสำคัญ" src="1000001888.jpg">
-      </div>
-    </section>
-  </main>
-
-</body>
-</html>
-
+      <div class="photo-card">
+        <div class="photo-frame" id="photoFrame">
+          <img id="couplePhoto" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCASwAqMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD6HooorrAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooopMAooooQBRRRTAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiikAUUUUIAooopgFFFFJgFFFFIAooooAKKKKQBRRRQAUUUUAFFFFWAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRSYBRRRQgCiiimAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRSYBRRRSAKKKKACiiikAUUUUAFFFFWAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRSYBRRRQgCiiimAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUmAUUUUgCiiigAooooAKKKKoAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiikAUUUUwCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooopMAooopAFFFFABRRRQAUUUVQBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFJgFFFFMAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKQBRRRRYAoooosAUUUUWAKKKKYBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFS9wCiiiqAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKQBRRRRcAooopgFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUVL3AKKKKoAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiikAUUUUAFFFFIAoooqgCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKTQBRRRTAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooopAFFFFIAooooAKKKKoAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACikozQAtFHXijGeM0AFGBRtGcBuaMkAEDINABgUYFG7BwBzRuz296ADj1oowPTBoAz3FABRRjtSZoAWiiigAooooAKKKKACiiigAooooAKKKKACiiigAooopAFFFFIAooooAKKKKoAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoopCcUALSZFLRgD296ADjOKCAKQsBzkfiawPEfj3QPC9o91qGoQ4QH92jZbNJgdBnjIHSomuokba0kYbGcFhXyn4u/ah1V9ckOhKFsANq7xgnj/HNeV6t8TPE2ralJqEmqTxySEkqjkLUe0QH23rnxN8K+HrtbTUNVjjlb+HOcflXm3j/wDaa0XSLJovDzC8uycbz0Wvk6/1K71W4826uJJpMdWOarOjxN867aj2jA+gLH9rjWo9ovNJtnx/EGNaNl+1tOdRg+0aav2M580DqD6181kEHB60g+tTzsD7S8MftLeE9aST7dM9lIp4U5OR+AxXc+GPiR4a8Y8aTqKTyDohGGP4Hmvz3RwrZBYVpaD4k1Twzere6TeSWs46spqlUYH6OE+vGaNozjPNfMPws/abeDNh4rMswb7txjJB7V79bePPD9xZQXialAsU2AoLDOTWqkmB0HHrSZFNhmW4RZIyGRhkMOhFP4PT9KYBRQeKQHNMBaKK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
