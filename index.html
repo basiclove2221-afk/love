@@ -47,7 +47,7 @@
     .modal-bg.show .modal-box { transform: scale(1); }
     .modal-box h2 { font-family: "Charm", cursive; font-size: 1.6rem; color: var(--text); margin-bottom: 6px; }
     .modal-box p { font-family: "Sarabun", sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
-    .modal-input { width: 100%; padding: 13px 16px; border: 1.5px solid rgba(212,168,160,.5); border-radius: 100px; font-family: "Sarabun", sans-serif; font-size: 16px; text-align: center; background: var(--white); text-color: var(--text); outline: none; letter-spacing: .25em; transition: border-color .2s; }
+    .modal-input { width: 100%; padding: 13px 16px; border: 1.5px solid rgba(212,168,160,.5); border-radius: 100px; font-family: "Sarabun", sans-serif; font-size: 16px; text-align: center; background: var(--white); color: var(--text); outline: none; letter-spacing: .25em; transition: border-color .2s; }
     .modal-input:focus { border-color: var(--rose); }
     .modal-input.shake { animation: shake .35s ease; }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
@@ -119,8 +119,8 @@
     
     <section class="hero">
       <div class="hero-text">
-        <h1>แฟนผม <em>🤍</em></h1>
-        <p>คนที่ผมรักที่สุด</p>
+        <h1 id="editableTitle" contenteditable="false">แฟนผม <em>🤍</em></h1>
+        <p id="editableSubtitle" contenteditable="false">คนที่ผมรักที่สุด</p>
       </div>
 
       <div class="photo-card">
@@ -130,7 +130,7 @@
             <span>เปลี่ยนรูปภาพ</span>
           </div>
         </div>
-        <a href="https://instagram.com/" class="ig-btn" target="_blank">
+        <a href="https://instagram.com/" class="ig-btn" id="editableIg" target="_blank">
           IG : แฟนผม 🤍
         </a>
       </div>
@@ -165,7 +165,7 @@
     <div class="divider"></div>
 
     <section class="quote-section">
-      blockquote>ขอบคุณที่เข้ามาเป็นเรื่องราวดีๆ ในชีวิตนะ อยู่เป็นความสุขของกันแบบนี้ไปนานๆ นะครับ 💕</blockquote>
+      <blockquote id="editableQuote" contenteditable="false">ขอบคุณที่เข้ามาเป็นเรื่องราวดีๆ ในชีวิตนะ อยู่เป็นความสุขของกันแบบนี้ไปนานๆ นะครับ 💕</blockquote>
     </section>
 
     <footer>
@@ -193,7 +193,6 @@
   <input type="file" id="fileInput" accept="image/*">
 
   <script>
-    // สคริปต์การทำงานพื้นฐานสำหรับการคำนวณวันและอนิเมชันกลีบดอกไม้ร่วง
     window.addEventListener('DOMContentLoaded', () => {
       const loader = document.getElementById('loader');
       const main = document.querySelector('main');
@@ -216,7 +215,7 @@
         setTimeout(() => petal.remove(), 10000);
       }, 600);
 
-      // ระบบตั้งค่าวันครบรอบเริ่มต้น (สามารถเปลี่ยนวันที่ตรงนี้ได้)
+      // ระบบตั้งค่าวันครบรอบเริ่มต้น (แก้ไขวันที่คบกันตรงนี้ได้เลย)
       const anniversaryDate = new Date("2025-01-01T00:00:00"); 
       
       function updateCounters() {
@@ -240,13 +239,86 @@
       setInterval(updateCounters, 1000);
       updateCounters();
 
-      // การแสดงผลปุ่มเกียร์ (แสดงรหัสผ่านจำลอง)
+      // --- ซ่อมแซมระบบรหัสผ่านและการเข้าสู่โหมดแก้ไข ---
+      const CORRECT_PASSWORD = "123456"; // คุณสามารถเปลี่ยนรหัสผ่านตรงนี้ได้ตามต้องการครับ
+      
       const gearBtn = document.getElementById('gearBtn');
       const modalBg = document.getElementById('modalBg');
       const cancelBtn = document.getElementById('modalCancelBtn');
+      const pwInput = document.getElementById('pwInput');
+      const pwOkBtn = document.getElementById('pwOkBtn');
+      const pwErr = document.getElementById('pwErr');
       
-      gearBtn.addEventListener('click', () => modalBg.classList.add('show'));
+      const editBanner = document.getElementById('editBanner');
+      const editOverlay = document.getElementById('editOverlay');
+      const exitBtn = document.getElementById('exitBtn');
+      
+      // ส่วนประกอบที่อนุญาตให้แก้ไขเนื้อหา
+      const editableItems = [
+        document.getElementById('editableTitle'),
+        document.getElementById('editableSubtitle'),
+        document.getElementById('editableQuote')
+      ];
+
+      gearBtn.addEventListener('click', () => {
+        modalBg.classList.add('show');
+        pwInput.value = "";
+        pwErr.innerText = "";
+        pwInput.focus();
+      });
+      
       cancelBtn.addEventListener('click', () => modalBg.classList.remove('show'));
+
+      // ฟังก์ชันตรวจสอบรหัสผ่าน
+      pwOkBtn.addEventListener('click', () => {
+        if (pwInput.value === CORRECT_PASSWORD) {
+          modalBg.classList.remove('show');
+          // เปิดโหมดแก้ไข
+          editBanner.classList.add('show');
+          editOverlay.classList.add('active');
+          exitBtn.classList.add('show');
+          gearBtn.style.display = 'none';
+          
+          editableItems.forEach(item => {
+            item.contentEditable = "true";
+            item.style.border = "1.5px dashed #d4aba0";
+            item.style.borderRadius = "8px";
+            item.style.padding = "4px";
+          });
+        } else {
+          pwInput.classList.add('shake');
+          pwErr.innerText = "รหัสผ่านไม่ถูกต้อง ลองอีกครั้งนะ";
+          setTimeout(() => pwInput.classList.remove('shake'), 350);
+        }
+      });
+
+      // ปุ่มออกจากโหมดแก้ไข (เซฟจำลอง)
+      exitBtn.addEventListener('click', () => {
+        editBanner.classList.remove('show');
+        editOverlay.classList.remove('active');
+        exitBtn.classList.remove('show');
+        gearBtn.style.display = 'flex';
+        
+        editableItems.forEach(item => {
+          item.contentEditable = "false";
+          item.style.border = "none";
+          item.style.padding = "0";
+        });
+      });
+
+      // ระบบจำลองเลือกไฟล์รูปภาพเมื่อกดที่รูปในโหมดแก้ไข
+      const fileInput = document.getElementById('fileInput');
+      editOverlay.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            document.getElementById('couplePhoto').src = event.target.result;
+          }
+          reader.readAsDataURL(file);
+        }
+      });
     });
   </script>
 </body>
