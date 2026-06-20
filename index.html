@@ -76,6 +76,7 @@
     @keyframes fall { 0% { opacity: 0; transform: translateY(-20px) rotate(0deg); } 10% { opacity: .45; } 90% { opacity: .25; } 100% { opacity: 0; transform: translateY(100vh) rotate(360deg); } }
     #fileInput { display: none; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -124,39 +125,37 @@
   </main>
 
   <script>
-    // เปิดระบบคลังรูปภาพถาวรประจำเครื่อง (IndexedDB)
-    const dbName = "PhotoWorkspaceDB";
-    let db;
-    const request = indexedDB.open(dbName, 1);
+    // เชื่อมต่อฐานข้อมูลคลาวด์สาธารณะ (เปิดสิทธิ์ให้อ่านเขียนได้อิสระ)
+    const supabaseUrl = 'https://ofbybbygexbujmbtvclv.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mYnliYnlnZXhidWptYnR2Y2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI2NjU3MjMsImV4cCI6MjAyODI0MTcyM30.4b9uX-T_iNExWp_k3_zXyV3W12b-D0l6_h5K00xSg_Y';
+    const supabase = supabase             ? supabase.createClient(supabaseUrl, supabaseKey) : null;
+    
+    // ดึงไอดีที่ไม่ซ้ำโดยใช้ชื่อโดเมนของเว็บคุณ เพื่อไม่ให้ไปปนกับคนอื่น
+    const projectRoomId = window.location.hostname || "default_love_room";
 
-    request.onupgradeneeded = function(e) {
-      db = e.target.result;
-      if (!db.objectStoreNames.contains("photos")) {
-        db.createObjectStore("photos", { keyPath: "id" });
-      }
-    };
-
-    request.onsuccess = function(e) {
-      db = e.target.result;
-      displaySavedPhoto();
-    };
-
-    // ฟังก์ชันดึงรูปภาพที่เคยเซฟไว้ในเครื่องออกมาโชว์
-    function displaySavedPhoto() {
-      if (!db) return;
-      const transaction = db.transaction(["photos"], "readonly");
-      const store = transaction.objectStore("photos");
-      const getReq = store.get("current_photo");
-
-      getReq.onsuccess = function() {
-        if (getReq.result) {
-          document.getElementById('couplePhoto').src = getReq.result.base64;
+    // ฟังก์ชันดึงรูปภาพล่าสุดจากฐานข้อมูลออนไลน์มาโชว์
+    async function syncPhotoFromServer() {
+      try {
+        const { data, error } = await supabase
+          .from('love_photos')
+          .select('image_data')
+          .eq('room_id', projectRoomId)
+          .single();
+        
+        if (data && data.image_data) {
+          document.getElementById('couplePhoto').src = data.image_data;
         }
-      };
+      } catch (err) { console.log("กำลังโหลดรูปเริ่มต้น..."); }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // ปิด Loader เมื่อโหลดเสร็จ
+      // ซิงค์รูปภาพจากเซิร์ฟเวอร์ทันทีที่เปิดเว็บ
+      syncPhotoFromServer();
+
+      // ตั้งเวลาเช็กรูปใหม่ทุกๆ 5 วินาที เผื่ออีกฝั่งกดเปลี่ยนรูป หน้าเราจะได้เปลี่ยนตามอัตโนมัติ
+      setInterval(syncPhotoFromServer, 5000);
+
+      // ปิด Loader
       setTimeout(() => {
         document.getElementById('loader').classList.add('hidden');
         document.querySelector('main').classList.add('visible');
@@ -175,7 +174,7 @@
         setTimeout(() => petal.remove(), 10000);
       }, 600);
 
-      // --- ระบบรหัสผ่านและโหมดแก้ไขรูปภาพประจำเครื่อง ---
+      // --- ระบบรหัสผ่านและโหมดแก้ไขรูปภาพแชร์กันสองคน ---
       const PASSWORD = "123456"; 
       const gearBtn = document.getElementById('gearBtn');
       const closeBtn = document.getElementById('closeBtn');
@@ -211,40 +210,5 @@
           modalBg.classList.remove('show');
           gearBtn.style.display = 'none';
           closeBtn.style.display = 'flex'; 
-          photoFrame.classList.add('edit-active'); 
-          editBanner.style.display = 'block';
-        } else {
-          errorMsg.style.display = 'block';
-        }
-      });
-
-      couplePhoto.addEventListener('click', () => {
-        if (photoFrame.classList.contains('edit-active')) {
-          fileInput.click();
-        }
-      });
-
-      // เปลี่ยนรูปและเซฟถาวรลงในลิ้นชักเบราว์เซอร์ของใครของมัน
-      fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            const base64Image = event.target.result;
-            couplePhoto.src = base64Image;
-            
-            // บันทึกลง IndexedDB ประจำเครื่องแบบถาวร
-            if (db) {
-              const transaction = db.transaction(["photos"], "readwrite");
-              const store = transaction.objectStore("photos");
-              store.put({ id: "current_photo", base64: base64Image });
-            }
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+          photoFrame.classList.add
 
