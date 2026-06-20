@@ -124,15 +124,38 @@
   </main>
 
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const couplePhoto = document.getElementById('couplePhoto');
+    // เปิดระบบคลังรูปภาพถาวรประจำเครื่อง (IndexedDB)
+    const dbName = "PhotoWorkspaceDB";
+    let db;
+    const request = indexedDB.open(dbName, 1);
 
-      // ตรวจสอบว่าเคยเซฟรูปภาพไว้ในเบราว์เซอร์นี้ไหม ถ้ามีให้ดึงมาแสดงแทนรูปดั้งเดิมทันที
-      const savedPhoto = localStorage.getItem('userSavedPhoto');
-      if (savedPhoto) {
-        couplePhoto.src = savedPhoto;
+    request.onupgradeneeded = function(e) {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains("photos")) {
+        db.createObjectStore("photos", { keyPath: "id" });
       }
+    };
 
+    request.onsuccess = function(e) {
+      db = e.target.result;
+      displaySavedPhoto();
+    };
+
+    // ฟังก์ชันดึงรูปภาพที่เคยเซฟไว้ในเครื่องออกมาโชว์
+    function displaySavedPhoto() {
+      if (!db) return;
+      const transaction = db.transaction(["photos"], "readonly");
+      const store = transaction.objectStore("photos");
+      const getReq = store.get("current_photo");
+
+      getReq.onsuccess = function() {
+        if (getReq.result) {
+          document.getElementById('couplePhoto').src = getReq.result.base64;
+        }
+      };
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
       // ปิด Loader เมื่อโหลดเสร็จ
       setTimeout(() => {
         document.getElementById('loader').classList.add('hidden');
@@ -152,7 +175,7 @@
         setTimeout(() => petal.remove(), 10000);
       }, 600);
 
-      // --- ระบบรหัสผ่านและโหมดแก้ไข ---
+      // --- ระบบรหัสผ่านและโหมดแก้ไขรูปภาพประจำเครื่อง ---
       const PASSWORD = "123456"; 
       const gearBtn = document.getElementById('gearBtn');
       const closeBtn = document.getElementById('closeBtn');
@@ -162,6 +185,7 @@
       const pwInput = document.getElementById('pwInput');
       const errorMsg = document.getElementById('errorMsg');
       const photoFrame = document.getElementById('photoFrame');
+      const couplePhoto = document.getElementById('couplePhoto');
       const fileInput = document.getElementById('fileInput');
       const editBanner = document.getElementById('editBanner');
 
@@ -200,7 +224,7 @@
         }
       });
 
-      // เปลี่ยนรูปภาพและเซฟลงความจำเครื่อง (อยู่ตลอดไปแม้จะรีเฟรชหน้าเว็บ)
+      // เปลี่ยนรูปและเซฟถาวรลงในลิ้นชักเบราว์เซอร์ของใครของมัน
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -209,11 +233,11 @@
             const base64Image = event.target.result;
             couplePhoto.src = base64Image;
             
-            // บันทึกรูปลงใน localStorage ของเครื่องนี้
-            try {
-              localStorage.setItem('userSavedPhoto', base64Image);
-            } catch (error) {
-              console.log("ขนาดรูปใหญ่เกินไปที่จะเซฟลงเครื่องถาวรได้ แนะนำใช้รูปขนาดเล็กกว่านี้ครับ");
+            // บันทึกลง IndexedDB ประจำเครื่องแบบถาวร
+            if (db) {
+              const transaction = db.transaction(["photos"], "readwrite");
+              const store = transaction.objectStore("photos");
+              store.put({ id: "current_photo", base64: base64Image });
             }
           };
           reader.readAsDataURL(file);
