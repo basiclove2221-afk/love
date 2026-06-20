@@ -1,110 +1,80 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>โลกเล็กๆ ของเรา 🌸</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;1,300&family=Mitr:wght@300;400;500&family=Charm:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Mitr:wght@300;400;500&family=Charm:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --cream: #faf7f2; --blush: #f2ddd8; --rose: #d4aba0;
+      --cream: #faf7f2; --blush: #f2ddd8; --rose: #d4a8a0;
       --dusty: #b88a82; --text: #3d2e2b; --muted: #9a7e7a;
-      --white: #ffffff; --card: rgba(255,255,255,0.85);
+      --white: #ffffff; --card: rgba(255,255,255,0.75);
     }
     html { scroll-behavior: smooth; }
-    body { background: var(--cream); color: var(--text); font-family: "Sarabun", sans-serif; font-weight: 300; min-height: 100vh; overflow-x: hidden; }
-    
+    body { background: var(--cream); color: var(--text); font-family: "Sarabun", sans-serif; font-weight: 300; min-height: 100vh; overflow-x: hidden; position: relative; }
+
     /* LOADER */
-    #loader { position: fixed; inset: 0; background: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 200; transition: opacity .7s ease, visibility .7s ease; }
+    #loader { position: fixed; inset: 0; background: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 500; transition: opacity .7s ease, visibility .7s ease; }
     #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     .loader-heart { width: 44px; height: 44px; background: var(--rose); transform: rotate(45deg); animation: heartbeat .85s ease-in-out infinite; position: relative; border-radius: 4px; }
     .loader-heart::before, .loader-heart::after { content: ""; position: absolute; width: 44px; height: 44px; background: var(--rose); border-radius: 50%; }
     .loader-heart::before { top: -22px; left: 0; }
     .loader-heart::after { left: -22px; top: 0; }
     .loader-text { font-family: "Charm", cursive; font-size: 15px; color: var(--dusty); letter-spacing: .1em; margin-top: 12px; }
-    @keyframes heartbeat { 0%, 100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.10); } }
-    
+    @keyframes heartbeat { 0%,100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.18); } }
+
     /* MAIN */
-    main { opacity: 0; transform: translateY(10px); transition: opacity .9s ease .2s, transform .9s ease .2s; }
+    main { opacity: 0; transform: translateY(16px); transition: opacity .9s ease .2s, transform .9s ease .2s; }
     main.visible { opacity: 1; transform: translateY(0); }
+
+    /* EYEBROW */
+    .eyebrow { text-align: center; padding: 32px 0 0; font-family: "Mitr", sans-serif; font-size: 11px; letter-spacing: .22em; color: var(--muted); }
+
+    /* HERO */
+    .hero { display: flex; flex-direction: column; align-items: center; padding: 20px 24px 48px; gap: 30px; }
+    .hero-text { text-align: center; width: 100%; max-width: 320px; }
+    .hero-text h1 { font-family: "Charm", cursive; font-weight: 700; font-size: clamp(2.2rem, 10vw, 3.4rem); line-height: 1.2; color: var(--text); }
+    .hero-text h1 em { font-style: normal; color: var(--dusty); }
+    .hero-text p { margin-top: 10px; font-family: "Sarabun", sans-serif; font-size: 14px; color: var(--muted); letter-spacing: .04em; font-weight: 300; }
+
+    /* PHOTO CARD */
+    .photo-card { width: 100%; max-width: 320px; position: relative; display: flex; flex-direction: column; align-items: center; }
+    .photo-frame { width: 100%; aspect-ratio: 3/4; border-radius: 24px 24px 0 0; overflow: hidden; box-shadow: 0 10px 36px rgba(180,130,120,.2); position: relative; }
+    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: default; }
+    
+    /* โหมดแก้ไขรูปจะจิ้มได้ */
+    .photo-frame.edit-active img { cursor: pointer; filter: brightness(0.7); }
+    .photo-frame.edit-active::after { content: "📸 จิ้มเพื่อเปลี่ยนรูป"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-family: "Mitr", sans-serif; font-size: 14px; background: rgba(0,0,0,0.4); pointer-events: none; }
+
+    .ig-btn { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 16px 24px; border-radius: 0 0 24px 24px; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; font-family: "Mitr", sans-serif; font-size: 15px; font-weight: 400; letter-spacing: .06em; text-decoration: none; box-shadow: 0 8px 24px rgba(180,130,120,.28); transition: filter .2s ease; }
     
     /* TOP RIGHT BUTTONS */
     .top-btns { position: fixed; top: 16px; right: 16px; z-index: 100; display: flex; align-items: center; gap: 8px; }
-    .gear-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--card); box-shadow: 0 2px 14px rgba(180,130,120,.2); color: var(--dusty); backdrop-filter: blur(8px); transition: transform .2s ease; }
+    .gear-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--white); box-shadow: 0 2px 14px rgba(180,130,120,.2); color: var(--dusty); font-size: 18px; transition: transform .2s ease; }
     .gear-btn:hover { transform: rotate(45deg); }
-    .exit-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; box-shadow: 0 2px 14px rgba(180,130,120,.3); transition: transform .2s ease; }
-    .exit-btn:hover { transform: scale(1.1); }
-    .exit-btn { display: none; }
-    .exit-btn.show { display: flex; }
+    .close-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: none; align-items: center; justify-content: center; background: #c0605a; color: #fff; font-size: 16px; box-shadow: 0 2px 14px rgba(0,0,0,0.2); }
     
-    /* PASSWORD MODAL */
-    .modal-bg { position: fixed; inset: 0; background: rgba(61,46,43,.5); backdrop-filter: blur(8px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; }
+    /* MODAL POPUP */
+    .modal-bg { position: fixed; inset: 0; background: rgba(61,46,43,.5); backdrop-filter: blur(4px); z-index: 600; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
     .modal-bg.show { opacity: 1; visibility: visible; }
-    .modal-box { background: var(--cream); border-radius: 24px; padding: 32px; max-width: 300px; width: 88%; text-align: center; box-shadow: 0 16px 40px rgba(180,130,120,.3); transform: scale(.92); transition: transform .3s ease; }
-    .modal-bg.show .modal-box { transform: scale(1); }
-    .modal-box h2 { font-family: "Charm", cursive; font-size: 1.6rem; color: var(--text); margin-bottom: 6px; }
-    .modal-box p { font-family: "Sarabun", sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
-    .modal-input { width: 100%; padding: 13px 16px; border: 1.5px solid rgba(212,168,160,.5); border-radius: 100px; font-family: "Sarabun", sans-serif; font-size: 16px; text-align: center; background: var(--white); color: var(--text); outline: none; letter-spacing: .25em; transition: border-color .2s; }
-    .modal-input:focus { border-color: var(--rose); }
-    .modal-input.shake { animation: shake .35s ease; }
-    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-    .modal-err { font-family: "Sarabun", sans-serif; font-size: 12px; color: #c0605a; margin-top: 8px; min-height: 18px; }
-    .modal-btn { margin-top: 16px; width: 100%; padding: 14px; border-radius: 100px; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; font-family: "Mitr", sans-serif; font-size: 15px; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(180,130,120,.3); transition: filter .2s; }
-    .modal-btn:hover { filter: brightness(1.08); }
-    .modal-cancel { margin-top: 12px; background: none; border: none; font-family: "Sarabun", sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; padding: 4px 8px; }
+    .modal-box { background: var(--cream); border-radius: 24px; padding: 28px; max-width: 300px; width: 88%; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+    .modal-box h2 { font-family: "Charm", cursive; font-size: 1.6rem; margin-bottom: 8px; color: var(--text); }
+    .modal-box p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .modal-input { width: 100%; padding: 10px 16px; border: 1.5px solid var(--rose); border-radius: 100px; text-align: center; font-size: 16px; outline: none; margin-bottom: 12px; background: var(--white); color: var(--text); }
+    .modal-btn { width: 100%; padding: 12px; border-radius: 100px; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: white; border: none; font-family: "Mitr", sans-serif; cursor: pointer; font-size: 15px; }
+    .modal-cancel { margin-top: 10px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; display: block; width: 100%; }
+    .error-msg { color: #c0605a; font-size: 12px; margin-top: -6px; margin-bottom: 10px; display: none; }
+
+    /* BANNER */
+    .edit-banner { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #3d2e2b; color: #fff; padding: 10px 20px; border-radius: 100px; font-size: 12px; font-family: "Mitr", sans-serif; z-index: 100; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; white-space: nowrap; }
     
-    /* EDIT MODE BANNER */
-    .edit-banner { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; border-radius: 100px; padding: 12px 24px; font-family: "Mitr", sans-serif; font-size: 13px; letter-spacing: .05em; box-shadow: 0 6px 24px rgba(180,130,120,.35); z-index: 100; white-space: nowrap; display: none; }
-    .edit-banner.show { display: block; }
-    
-    /* EDIT OVERLAY on photo */
-    .edit-overlay { position: absolute; inset: 0; background: rgba(61,46,43,.42); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; opacity: 0; pointer-events: none; transition: opacity .25s ease; border-radius: 24px 24px 0 0; }
-    .edit-overlay.active { opacity: 1; pointer-events: all; cursor: pointer; }
-    .edit-overlay span { font-family: "Mitr", sans-serif; font-size: 14px; color: #fff; letter-spacing: .05em; }
-    
-    .eyebrow { text-align: center; padding: 32px 0 0; font-family: "Mitr", sans-serif; font-size: 11px; letter-spacing: .22em; color: var(--muted); }
-    .hero { display: flex; flex-direction: column; align-items: center; padding: 20px 24px 48px; gap: 30px; }
-    .hero-text { text-align: center; }
-    .hero-text h1 { font-family: "Charm", cursive; font-weight: 700; font-size: clamp(2.2rem, 10vw, 3.4rem); line-height: 1.2; color: var(--text); }
-    .hero-text h1 em { font-style: normal; color: var(--dusty); }
-    .hero-text p { margin-top: 10px; font-size: 14px; color: var(--muted); font-weight: 300; }
-    .photo-card { width: 100%; max-width: 320px; position: relative; display: flex; flex-direction: column; align-items: center; }
-    .photo-frame { width: 100%; aspect-ratio: 3/4; border-radius: 24px 24px 0 0; overflow: hidden; box-shadow: 0 10px 36px rgba(180,130,120,.2); position: relative; }
-    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .photo-card::before, .photo-card::after { content: ""; position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--rose); opacity: .55; z-index: 1; }
-    .photo-card::before { top: -5px; right: -5px; }
-    .photo-card::after { bottom: 62px; left: -5px; }
-    .ig-btn { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 16px 24px; border-radius: 0 0 24px 24px; background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; font-family: "Mitr", sans-serif; font-size: 15px; font-weight: 400; letter-spacing: .06em; text-decoration: none; box-shadow: 0 8px 24px rgba(180,130,120,.28); transition: filter .2s ease; }
-    .ig-btn:hover { filter: brightness(1.07); }
-    .divider { width: 48px; height: 1px; background: var(--rose); margin: 0 auto; opacity: .45; }
-    .counter-section { padding: 0 20px 44px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
-    .section-eyebrow { font-family: "Mitr", sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); text-align: center; }
-    .milestone-badge { background: linear-gradient(135deg,var(--rose),var(--dusty)); color: #fff; border-radius: 100px; padding: 4px 20px; font-family: "Charm", cursive; font-size: clamp(1.15rem, 5vw, 1.4rem); box-shadow: 0 4px 20px rgba(180,130,120,.3); text-align: center; }
-    .counter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 340px; }
-    .counter-unit { background: var(--card); border: 1px solid rgba(212,168,160,.28); border-radius: 16px; padding: 14px 6px 10px; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 2px 14px rgba(180,130,120,.08); }
-    .counter-num { font-family: "Charm", cursive; font-size: clamp(1.7rem, 7vw, 2.3rem); color: var(--text); line-height: 1; display: block; transition: transform .12s ease; }
-    .counter-num.tick { transform: scale(1.1); }
-    .counter-unit small { display: block; font-family: "Mitr", sans-serif; font-size: 9px; letter-spacing: .14em; color: var(--muted); margin-top: 5px; }
-    .counter-since { font-family: "Sarabun", sans-serif; font-size: 12.5px; color: var(--muted); text-align: center; }
-    .countdown-wrap { width: 100%; max-width: 340px; background: var(--card); border: 1.5px dashed rgba(212,168,160,.45); border-radius: 20px; padding: 18px 12px 14px; text-align: center; box-shadow: 0 2px 14px rgba(180,130,120,.06); }
-    .countdown-title { font-family: "Sarabun", sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 14px; letter-spacing: 1.7; }
-    .countdown-title strong { font-family: "Mitr", sans-serif; color: var(--dusty); font-weight: 500; display: block; font-size: 13px; margin-top: 2px; }
-    .countdown-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .cd-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .cd-num { font-family: "Charm", cursive; font-size: clamp(1.3rem, 6vw, 1.9rem); color: var(--dusty); line-height: 1; transition: transform .12s ease; }
-    .cd-num.tick { transform: scale(1.1); }
-    .cd-unit small { font-family: "Mitr", sans-serif; font-size: 9px; letter-spacing: .12em; color: var(--muted); }
-    .quote-section { padding: 0 20px 48px; text-align: center; }
-    .quote-section blockquote { font-family: "Charm", cursive; font-size: clamp(1.1rem, 5vw, 1.4rem); color: var(--dusty); line-height: 1.9; max-width: 290px; margin: 0 auto; }
-    footer { text-align: center; padding: 0 24px 44px; font-family: "Sarabun", sans-serif; font-size: 12px; color: var(--muted); opacity: .65; }
-    footer span { color: var(--rose); }
     .petal { position: fixed; pointer-events: none; font-size: 13px; opacity: 0; animation: fall linear infinite; z-index: 0; }
     @keyframes fall { 0% { opacity: 0; transform: translateY(-20px) rotate(0deg); } 10% { opacity: .45; } 90% { opacity: .25; } 100% { opacity: 0; transform: translateY(100vh) rotate(360deg); } }
     #fileInput { display: none; }
-    @media (prefers-reduced-motion: reduce) { .petal, .loader-heart, main { animation: none; transition: none; } main { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -114,95 +84,54 @@
     <p class="loader-text">กำลังโหลดความรัก...</p>
   </div>
 
-  <main>
-    <p class="eyebrow">✦ คนสำคัญของผม ✦</p>
-    
-    <section class="hero">
-      <div class="hero-text">
-        <h1 id="editableTitle" contenteditable="false">แฟนผม <em>🤍</em></h1>
-        <p id="editableSubtitle" contenteditable="false">คนที่ผมรักที่สุด</p>
-      </div>
-
-      <div class="photo-card">
-        <div class="photo-frame" id="photoFrame">
-          <img id="couplePhoto" src="1000001888.jpg" alt="รูปคู่หรือรูปแฟน">
-          <div class="edit-overlay" id="editOverlay">
-            <span>เปลี่ยนรูปภาพ</span>
-          </div>
-        </div>
-        <a href="https://instagram.com/" class="ig-btn" id="editableIg" target="_blank">
-          IG : แฟนผม 🤍
-        </a>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <section class="counter-section">
-      <p class="section-eyebrow">คบกันมาแล้ว</p>
-      <div class="milestone-badge" id="milestoneTxt">กำลังคำนวณ...</div>
-      
-      <div class="counter-grid">
-        <div class="counter-unit"><span class="counter-num" id="cDays">-</span><small>วัน</small></div>
-        <div class="counter-unit"><span class="counter-num" id="cHours">-</span><small>ชั่วโมง</small></div>
-        <div class="counter-unit"><span class="counter-num" id="cMins">-</span><small>นาที</small></div>
-        <div class="counter-unit"><span class="counter-num" id="cSecs">-</span><small>วินาที</small></div>
-      </div>
-      
-      <p class="counter-since" id="startDateTxt">ตั้งแต่วันที่ --/--/----</p>
-      
-      <div class="countdown-wrap">
-        <p class="countdown-title">นับถอยหลังวันครบรอบปีถัดไป<strong id="nextAnnivTxt">--/--/----</strong></p>
-        <div class="countdown-grid">
-          <div class="cd-unit"><span class="cd-num" id="cdDays">-</span><small>วัน</small></div>
-          <div class="cd-unit"><span class="cd-num" id="cdHours">-</span><small>ชม.</small></div>
-          <div class="cd-unit"><span class="cd-num" id="cdMins">-</span><small>นาที</small></div>
-          <div class="cd-unit"><span class="cd-num" id="cdSecs">-</span><small>วิ</small></div>
-        </div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <section class="quote-section">
-      <blockquote id="editableQuote" contenteditable="false">ขอบคุณที่เข้ามาเป็นเรื่องราวดีๆ ในชีวิตนะ อยู่เป็นความสุขของกันแบบนี้ไปนานๆ นะครับ 💕</blockquote>
-    </section>
-
-    <footer>
-      <p>สร้างด้วยความรัก <span>♥</span> โดยคุณ</p>
-    </footer>
-  </main>
-
   <div class="top-btns">
-    <button class="gear-btn" id="gearBtn" title="ตั้งค่าวันครบรอบ">⚙️</button>
-    <button class="exit-btn" id="exitBtn" title="ออกจากโหมดแก้ไข">✔️</button>
+    <button class="gear-btn" id="gearBtn">⚙️</button>
+    <button class="close-btn" id="closeBtn">❌</button>
   </div>
 
   <div class="modal-bg" id="modalBg">
     <div class="modal-box">
       <h2>ใส่รหัสเพื่อแก้ไข</h2>
-      <p>กรอกรหัสผ่านเพื่อเข้าสู่โหมดแก้ไขข้อมูลบนหน้าเว็บของคุณ</p>
-      <input type="password" class="modal-input" id="pwInput" placeholder="••••••" maxlength="20">
-      <p class="modal-err" id="pwErr"></p>
-      <button class="modal-btn" id="pwOkBtn">ยืนยัน</button>
-      <button class="modal-cancel" id="modalCancelBtn">ยกเลิก</button>
+      <p>กรอกรหัสผ่านเข้าสู่โหมดแก้ไขรูปภาพ</p>
+      <input type="password" class="modal-input" id="pwInput" placeholder="กรอกรหัสผ่าน">
+      <div class="error-msg" id="errorMsg">รหัสผ่านไม่ถูกต้อง!</div>
+      <button class="modal-btn" id="submitBtn">ยืนยัน</button>
+      <button class="modal-cancel" id="cancelBtn">ยกเลิก</button>
     </div>
   </div>
 
-  <div class="edit-banner" id="editBanner">✏️ โหมดแก้ไข — กดที่รูปหรือข้อความเพื่อเปลี่ยน</div>
+  <div class="edit-banner" id="editBanner">✏️ โหมดแก้ไข: จิ้มที่รูปภาพเพื่อเปลี่ยนรูปได้เลย</div>
   <input type="file" id="fileInput" accept="image/*">
+
+  <main>
+    <p class="eyebrow">✦ คนสำคัญของผม ✦</p>
+    
+    <section class="hero">
+      <div class="hero-text">
+        <h1>แฟนผม <em>🤍</em></h1>
+        <p>คนที่ผมรักที่สุดในโลก</p>
+      </div>
+
+      <div class="photo-card">
+        <div class="photo-frame" id="photoFrame">
+          <img id="couplePhoto" src="1000001888.jpg" alt="รูปแฟน">
+        </div>
+        <a href="https://instagram.com/" class="ig-btn" target="_blank">
+          IG : แฟนผม 🤍
+        </a>
+      </div>
+    </section>
+  </main>
 
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      const loader = document.getElementById('loader');
-      const main = document.querySelector('main');
-      
+      // ปิด Loader เมื่อโหลดเสร็จ
       setTimeout(() => {
-        loader.classList.add('hidden');
-        main.classList.add('visible');
+        document.getElementById('loader').classList.add('hidden');
+        document.querySelector('main').classList.add('visible');
       }, 1000);
 
-      // สร้างกลีบดอกไม้ร่วงแบบสุ่ม
+      // เอฟเฟกต์ดอกไม้ร่วง
       const petals = ['🌸', '🌷', '✿', '💕'];
       setInterval(() => {
         if(document.hidden) return;
@@ -215,107 +144,68 @@
         setTimeout(() => petal.remove(), 10000);
       }, 600);
 
-      // ระบบตั้งค่าวันครบรอบเริ่มต้น (แก้ไขวันที่คบกันตรงนี้ได้เลย)
-      const anniversaryDate = new Date("2025-01-01T00:00:00"); 
-      
-      function updateCounters() {
-        const now = new Date();
-        const diff = now - anniversaryDate;
-        
-        if (diff > 0) {
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-          const mins = Math.floor((diff / (1000 * 60)) % 60);
-          const secs = Math.floor((diff / 1000) % 60);
-          
-          document.getElementById('cDays').innerText = days;
-          document.getElementById('cHours').innerText = hours;
-          document.getElementById('cMins').innerText = mins;
-          document.getElementById('cSecs').innerText = secs;
-          document.getElementById('milestoneTxt').innerText = `ครบรอบ ${days} วัน`;
-          document.getElementById('startDateTxt').innerText = `ตั้งแต่วันที่ ${anniversaryDate.toLocaleDateString('th-TH')}`;
-        }
-      }
-      setInterval(updateCounters, 1000);
-      updateCounters();
-
-      // --- ซ่อมแซมระบบรหัสผ่านและการเข้าสู่โหมดแก้ไข ---
-      const CORRECT_PASSWORD = "123456"; // คุณสามารถเปลี่ยนรหัสผ่านตรงนี้ได้ตามต้องการครับ
-      
+      // --- ระบบรหัสผ่านและโหมดแก้ไขตามใจสั่ง ---
+      const PASSWORD = "123456"; // รหัสผ่านสำหรับเปิดโหมดแก้ไข
       const gearBtn = document.getElementById('gearBtn');
+      const closeBtn = document.getElementById('closeBtn');
       const modalBg = document.getElementById('modalBg');
-      const cancelBtn = document.getElementById('modalCancelBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const submitBtn = document.getElementById('submitBtn');
       const pwInput = document.getElementById('pwInput');
-      const pwOkBtn = document.getElementById('pwOkBtn');
-      const pwErr = document.getElementById('pwErr');
-      
+      const errorMsg = document.getElementById('errorMsg');
+      const photoFrame = document.getElementById('photoFrame');
+      const couplePhoto = document.getElementById('couplePhoto');
+      const fileInput = document.getElementById('fileInput');
       const editBanner = document.getElementById('editBanner');
-      const editOverlay = document.getElementById('editOverlay');
-      const exitBtn = document.getElementById('exitBtn');
-      
-      // ส่วนประกอบที่อนุญาตให้แก้ไขเนื้อหา
-      const editableItems = [
-        document.getElementById('editableTitle'),
-        document.getElementById('editableSubtitle'),
-        document.getElementById('editableQuote')
-      ];
 
+      // กดเฟืองเปิดกล่องรหัส
       gearBtn.addEventListener('click', () => {
         modalBg.classList.add('show');
-        pwInput.value = "";
-        pwErr.innerText = "";
-        pwInput.focus();
+        pwInput.value = '';
+        errorMsg.style.display = 'none';
       });
-      
-      cancelBtn.addEventListener('click', () => modalBg.classList.remove('show'));
 
-      // ฟังก์ชันตรวจสอบรหัสผ่าน
-      pwOkBtn.addEventListener('click', () => {
-        if (pwInput.value === CORRECT_PASSWORD) {
+      // กดกากบาทออกจากโหมดแก้ไข ทันที!
+      closeBtn.addEventListener('click', () => {
+        closeBtn.style.display = 'none';
+        gearBtn.style.display = 'flex';
+        photoFrame.classList.remove('edit-active');
+        editBanner.style.display = 'none';
+      });
+
+      // กดยกเลิก
+      cancelBtn.addEventListener('click', () => {
+        modalBg.classList.remove('show');
+      });
+
+      // กดปุ่มยืนยันรหัสผ่าน
+      submitBtn.addEventListener('click', () => {
+        if (pwInput.value === PASSWORD) {
           modalBg.classList.remove('show');
-          // เปิดโหมดแก้ไข
-          editBanner.classList.add('show');
-          editOverlay.classList.add('active');
-          exitBtn.classList.add('show');
           gearBtn.style.display = 'none';
-          
-          editableItems.forEach(item => {
-            item.contentEditable = "true";
-            item.style.border = "1.5px dashed #d4aba0";
-            item.style.borderRadius = "8px";
-            item.style.padding = "4px";
-          });
+          closeBtn.style.display = 'flex'; // แสดงปุ่มกากบาทข้างๆ แทนเฟือง
+          photoFrame.classList.add('edit-active'); // เปิดโหมดจิ้มรูป
+          editBanner.style.display = 'block';
         } else {
-          pwInput.classList.add('shake');
-          pwErr.innerText = "รหัสผ่านไม่ถูกต้อง ลองอีกครั้งนะ";
-          setTimeout(() => pwInput.classList.remove('shake'), 350);
+          errorMsg.style.display = 'block';
         }
       });
 
-      // ปุ่มออกจากโหมดแก้ไข (เซฟจำลอง)
-      exitBtn.addEventListener('click', () => {
-        editBanner.classList.remove('show');
-        editOverlay.classList.remove('active');
-        exitBtn.classList.remove('show');
-        gearBtn.style.display = 'flex';
-        
-        editableItems.forEach(item => {
-          item.contentEditable = "false";
-          item.style.border = "none";
-          item.style.padding = "0";
-        });
+      // เมื่อจิ้มที่รูปภาพในโหมดแก้ไข จะเด้งให้เลือกไฟล์ในเครื่อง
+      couplePhoto.addEventListener('click', () => {
+        if (photoFrame.classList.contains('edit-active')) {
+          fileInput.click();
+        }
       });
 
-      // ระบบจำลองเลือกไฟล์รูปภาพเมื่อกดที่รูปในโหมดแก้ไข
-      const fileInput = document.getElementById('fileInput');
-      editOverlay.addEventListener('click', () => fileInput.click());
+      // เปลี่ยนรูปภาพทันทีเมื่อเลือกไฟล์เสร็จ
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
           const reader = new FileReader();
           reader.onload = function(event) {
-            document.getElementById('couplePhoto').src = event.target.result;
-          }
+            couplePhoto.src = event.target.result;
+          };
           reader.readAsDataURL(file);
         }
       });
