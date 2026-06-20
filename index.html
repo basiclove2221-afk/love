@@ -125,6 +125,14 @@
 
   <script>
     window.addEventListener('DOMContentLoaded', () => {
+      const couplePhoto = document.getElementById('couplePhoto');
+
+      // ตรวจสอบว่าเคยเซฟรูปภาพไว้ในเบราว์เซอร์นี้ไหม ถ้ามีให้ดึงมาแสดงแทนรูปดั้งเดิมทันที
+      const savedPhoto = localStorage.getItem('userSavedPhoto');
+      if (savedPhoto) {
+        couplePhoto.src = savedPhoto;
+      }
+
       // ปิด Loader เมื่อโหลดเสร็จ
       setTimeout(() => {
         document.getElementById('loader').classList.add('hidden');
@@ -144,8 +152,8 @@
         setTimeout(() => petal.remove(), 10000);
       }, 600);
 
-      // --- ระบบรหัสผ่านและโหมดแก้ไขตามใจสั่ง ---
-      const PASSWORD = "123456"; // รหัสผ่านสำหรับเปิดโหมดแก้ไข
+      // --- ระบบรหัสผ่านและโหมดแก้ไข ---
+      const PASSWORD = "123456"; 
       const gearBtn = document.getElementById('gearBtn');
       const closeBtn = document.getElementById('closeBtn');
       const modalBg = document.getElementById('modalBg');
@@ -154,18 +162,15 @@
       const pwInput = document.getElementById('pwInput');
       const errorMsg = document.getElementById('errorMsg');
       const photoFrame = document.getElementById('photoFrame');
-      const couplePhoto = document.getElementById('couplePhoto');
       const fileInput = document.getElementById('fileInput');
       const editBanner = document.getElementById('editBanner');
 
-      // กดเฟืองเปิดกล่องรหัส
       gearBtn.addEventListener('click', () => {
         modalBg.classList.add('show');
         pwInput.value = '';
         errorMsg.style.display = 'none';
       });
 
-      // กดกากบาทออกจากโหมดแก้ไข ทันที!
       closeBtn.addEventListener('click', () => {
         closeBtn.style.display = 'none';
         gearBtn.style.display = 'flex';
@@ -173,38 +178,43 @@
         editBanner.style.display = 'none';
       });
 
-      // กดยกเลิก
       cancelBtn.addEventListener('click', () => {
         modalBg.classList.remove('show');
       });
 
-      // กดปุ่มยืนยันรหัสผ่าน
       submitBtn.addEventListener('click', () => {
         if (pwInput.value === PASSWORD) {
           modalBg.classList.remove('show');
           gearBtn.style.display = 'none';
-          closeBtn.style.display = 'flex'; // แสดงปุ่มกากบาทข้างๆ แทนเฟือง
-          photoFrame.classList.add('edit-active'); // เปิดโหมดจิ้มรูป
+          closeBtn.style.display = 'flex'; 
+          photoFrame.classList.add('edit-active'); 
           editBanner.style.display = 'block';
         } else {
           errorMsg.style.display = 'block';
         }
       });
 
-      // เมื่อจิ้มที่รูปภาพในโหมดแก้ไข จะเด้งให้เลือกไฟล์ในเครื่อง
       couplePhoto.addEventListener('click', () => {
         if (photoFrame.classList.contains('edit-active')) {
           fileInput.click();
         }
       });
 
-      // เปลี่ยนรูปภาพทันทีเมื่อเลือกไฟล์เสร็จ
+      // เปลี่ยนรูปภาพและเซฟลงความจำเครื่อง (อยู่ตลอดไปแม้จะรีเฟรชหน้าเว็บ)
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
           const reader = new FileReader();
           reader.onload = function(event) {
-            couplePhoto.src = event.target.result;
+            const base64Image = event.target.result;
+            couplePhoto.src = base64Image;
+            
+            // บันทึกรูปลงใน localStorage ของเครื่องนี้
+            try {
+              localStorage.setItem('userSavedPhoto', base64Image);
+            } catch (error) {
+              console.log("ขนาดรูปใหญ่เกินไปที่จะเซฟลงเครื่องถาวรได้ แนะนำใช้รูปขนาดเล็กกว่านี้ครับ");
+            }
           };
           reader.readAsDataURL(file);
         }
